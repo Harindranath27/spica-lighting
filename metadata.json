@@ -1,0 +1,6 @@
+{
+  "name": "Spica Lighting",
+  "description": "Premium LED Lighting Retailer & Project Supplier",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Lato:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Lato", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Montserrat", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Brand Colors */
+  --color-gold-primary: #C89B3C;
+  --color-gold-hover: #E5C87A;
+  --color-deep-black: #0B0B0C;
+  --color-warm-grey: #686B0B;
+  --color-off-white: #F5F5F5;
+  --color-pure-white: #FFFFFF;
+  
+  /* Additional UI utilities */
+  --animate-gold-pulse: goldPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes goldPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(200, 155, 60, 0.4);
+  }
+  50% {
+    opacity: .8;
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px rgba(200, 155, 60, 0);
+  }
+}
+
+/* Global scroll smoothing & styling */
+html, body {
+  background-color: #0B0B0C;
+  color: #F5F5F5;
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* CSS Shimmer Button Sweeping effects */
+.button-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: none;
+}
+
+.button-shimmer:hover::after {
+  left: 170%;
+  transition: left 0.8s ease-in-out;
+}
+
+/* Scroll Animation Transitions */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(35px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Gold Glow Cards */
+.card-hover-glow {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hover-glow:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(200, 155, 60, 0.15);
+  border-color: rgba(200, 155, 60, 0.4);
+}
+
+/* Frosted Glass Utilities */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(200, 155, 60, 0.3);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 15px rgba(200, 155, 60, 0.05);
+  transform: translateY(-4px);
+}
+
+.glass-card-strong {
+  background: rgba(11, 11, 12, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-nav {
+  background: rgba(11, 11, 12, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-blur-bg {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(120px);
+  mix-blend-mode: screen;
+  opacity: 0.15;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #C89B3C 0%, #E5C87A 50%, #C89B3C 100%);
+}
+
+.text-gold {
+  color: #C89B3C;
+}
+
+.border-gold {
+  border-color: #C89B3C;
+}
+
+.bg-gold {
+  background-color: #C89B3C;
+}
+
