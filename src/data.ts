@@ -918,20 +918,29 @@ export const PROJECTS: Project[] = [
   }
 ];
 export const FREQUENT_QUESTIONS = [
-  {
-    q: "Are you an authorized retailer for Wipro Lighting?",
-    a: "Yes, Spica Lighting is an authorized retailer for both Wipro Lighting (including their premium Cleanray range) and Wipro North-West (their high-end modular switches and wiring accessories)."
-  },
-  {
-    q: "Can I walk into a physical showroom to browse products?",
-    a: "We operate primary as a project supply powerhouse, warehouse and distribution facility in K.K Nagar, Trichy. While we do not maintain a traditional visual showroom for retail walk-ins, we welcome consultations at our office and coordinate direct material inspections for custom project requirements."
-  },
-  {
-    q: "How can I request pricing for my lighting projects?",
-    a: "Since pricing varies based on custom scope, commercial volume discounts, and detailed technical specs, we do not show MSRP online. Please click 'Enquire Now' or 'Request Quote' to send us your requirements. We will prepare your detailed commercial quote within 24 hours."
-  },
-  {
-    q: "Do you supply lighting outside of Trichy?",
-    a: "Absolutely. While our headquarters are in Trichy, we provide end-to-end technical lighting design and material logistics across all major cities and rural districts of Tamil Nadu, including Chennai, Coimbatore, Madurai, Salem, and Thanjavur."
-  }
+{
+q: "Are all your products genuine and branded?",
+a: "Yes. Spica Lighting supplies genuine products from authorized brands including Wipro Lighting, Wipro North-West, K-Lite, and Nexus. We focus on quality, reliability, and long-term performance."
+},
+{
+q: "Do you provide lighting solutions for homes and commercial projects?",
+a: "Yes. We support residential, retail, office, hospitality, industrial, healthcare, and institutional projects. Our team can assist with product selection and lighting recommendations based on your requirements."
+},
+{
+q: "Do you supply materials outside Trichy?",
+a: "Yes. We supply lighting and electrical products across Tamil Nadu and support projects in multiple cities and districts through our distribution network."
+},
+{
+q: "How can I request a quotation?",
+a: "You can submit an enquiry through our website, contact us by phone, or reach us on WhatsApp. Share your project details and our team will respond with a customized quotation."
+},
+{
+q: "Can you help me choose the right lighting for my space?",
+a: "Yes. We can recommend suitable lighting solutions based on room dimensions, ceiling height, application, ambiance requirements, and energy efficiency goals."
+},
+{
+q: "What types of projects has Spica Lighting completed?",
+a: "Our supplied projects include institutions, hospitals, hotels, commercial buildings, and industrial facilities, including IIM Trichy, NIT Trichy, Silverline Hospital, GVN Hospitals, Hotel Sri Akshayam, and other notable developments."
+}
 ];
+
