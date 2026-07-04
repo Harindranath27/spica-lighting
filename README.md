@@ -1,20 +1,26 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# CyberShield AI
 
-# Run and deploy your AI Studio app
+AI-powered phishing email detection system.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/1397e38d-36e1-4779-98d1-85fb995eb78f
+- Email Risk Analysis
+- URL Scanner
+- Attachment Detection
+- AI Threat Explanation
+- Trust Score
+- VirusTotal Integration
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- React
+- TypeScript
+- Express
+- Google Gemini
+- Tailwind CSS
 
+## Installation
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+npm run dev
