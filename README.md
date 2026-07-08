@@ -1,23 +1,25 @@
-# CyberShield AI
+# Spica Lighting
 
-AI-powered phishing email detection system.
+Official website of Spica Lighting.
+
+## About
+
+Spica Lighting is a lighting solutions company specializing in commercial, industrial, hospitality, healthcare, and architectural lighting.
 
 ## Features
 
-- Email Risk Analysis
-- URL Scanner
-- Attachment Detection
-- AI Threat Explanation
-- Trust Score
-- VirusTotal Integration
+- Responsive Website
+- Product Catalog
+- Contact Form
+- Modern UI
+- SEO Friendly
 
 ## Tech Stack
 
 - React
 - TypeScript
-- Express
-- Google Gemini
 - Tailwind CSS
+- Vite
 
 ## Installation
 
