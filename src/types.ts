@@ -1,3 +1,9 @@
+export interface CategoryNav {
+  id: string;
+  label: string;
+  desc?: string;
+}
+
 export interface Product {
   brand: string;
   image: string;
@@ -14,7 +20,7 @@ export interface Project {
   type: string;
   scope: string;
   productsUsed: string;
-  imageIndex: number; // Index to map to our 9 attachments
+  image?: string;
   city: string;
 }
 
@@ -23,3 +29,4 @@ export interface Message {
   content: string;
   timestamp: Date;
 }
+

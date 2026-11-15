@@ -13,7 +13,6 @@ export default async function handler(req: any, res: any) {
       email,
       phone,
       company,
-      location,
       message,
     } = req.body;
 
@@ -28,11 +27,9 @@ export default async function handler(req: any, res: any) {
         <p><strong>Phone:</strong> ${phone}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Company:</strong> ${company}</p>
-        <p><strong>Location:</strong> ${location}</p>
-
         <hr/>
 
-        <p><strong>Requirement:</strong></p>
+        <p><strong>Message:</strong></p>
         <p>${message}</p>
       `,
     });

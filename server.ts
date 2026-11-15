@@ -37,7 +37,7 @@ Products & Solutions:
 
 Notable Projects:
 
-* IIM Trichy
+* IIM Trichy Cricket Ground
 * NIT Trichy
 * Silverline Cancer & Multispeciality Hospital
 * GVN Hospitals
@@ -46,8 +46,6 @@ Notable Projects:
 * Hotel Sri Akshayam
 * Hotel Sai Karthik
 * Krishna Jewellery
-* MAPL India Pvt Ltd
-* Morais Developers Pvt Ltd
 
 Capabilities:
 
@@ -213,7 +211,6 @@ console.log("Resend Key:", process.env.RESEND_API_KEY?.slice(0, 8));
       email,
       phone,
       company,
-      location,
       message,
     } = req.body;
 
@@ -228,11 +225,9 @@ console.log("Resend Key:", process.env.RESEND_API_KEY?.slice(0, 8));
         <p><strong>Phone:</strong> ${phone}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Company:</strong> ${company}</p>
-        <p><strong>Location:</strong> ${location}</p>
-
         <hr/>
 
-        <p><strong>Requirement:</strong></p>
+        <p><strong>Message:</strong></p>
         <p>${message}</p>
       `,
     });

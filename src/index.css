@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Lato:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Lato:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -6,41 +6,162 @@
   --font-display: "Montserrat", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* Brand Colors */
+  /* Background-only midnight blue adjustment; original brand gold is preserved. */
+  --color-blue-black: #081522;
+  --color-deep-black: #081522;
+  --color-secondary-black: #0B1C2B;
+  --color-surface-elevated: #112538;
+
+  /* Original Brand Gold Colors */
   --color-gold-primary: #C89B3C;
   --color-gold-hover: #E5C87A;
-  --color-deep-black: #0B0B0C;
-  --color-warm-grey: #686B0B;
-  --color-off-white: #F5F5F5;
+
+  /* Existing warm white and grey text */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #D1D5DB;
+  --color-off-white: #F3F1EC;
   --color-pure-white: #FFFFFF;
-  
-  /* Additional UI utilities */
-  --animate-gold-pulse: goldPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@keyframes goldPulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(200, 155, 60, 0.4);
-  }
-  50% {
-    opacity: .8;
-    transform: scale(1.05);
-    box-shadow: 0 0 0 12px rgba(200, 155, 60, 0);
-  }
+:root {
+  /* Motion & Easing Tokens */
+  --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* Shared background palette */
+  --bg-primary: #081522;
+  --bg-secondary: #0B1C2B;
+  --bg-surface-elevated: #112538;
+
+  /* Original Brand Gold */
+  --gold-primary: #C89B3C;
+  --gold-hover: #E5C87A;
+
+  /* Text Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #D1D5DB;
+  --text-muted: #9CA3AF;
+
+  /* Subtle blue-white transparency borders */
+  --border-subtle: rgba(220, 235, 255, 0.08);
+  --border-default: rgba(220, 235, 255, 0.12);
+  --border-accent-subtle: rgba(200, 155, 60, 0.25);
+  --border-accent-default: rgba(200, 155, 60, 0.50);
 }
 
 /* Global scroll smoothing & styling */
 html, body {
-  background-color: #0B0B0C;
-  color: #F5F5F5;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   scroll-behavior: smooth;
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Keep scrolling available while hiding the bright browser scrollbar chrome. */
+html {
+  scrollbar-gutter: stable;
+}
+
+*, *::before, *::after {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb {
+  width: 0;
+  height: 0;
+  display: none;
+  background: transparent;
 }
 
 .font-display {
   font-family: var(--font-display);
+}
+
+/* Accessible focus-visible state across all interactive elements */
+:focus-visible {
+  outline: 2px solid #C89B3C;
+  outline-offset: 3px;
+}
+
+/* Standardized Content Layout Containers */
+.spica-container {
+  max-width: 80rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .spica-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .spica-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.spica-section {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+@media (min-width: 640px) {
+  .spica-section {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+@media (min-width: 1024px) {
+  .spica-section {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
+}
+
+/* Standardized Card & Surface Tokens */
+.card-surface {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+  transition: all var(--duration-slow) var(--ease-luxury);
+}
+
+.card-surface-hover:hover {
+  background: var(--bg-surface-elevated);
+  border-color: var(--border-accent-subtle);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(8, 21, 34, 0.6);
+}
+
+/* Clean Architectural Glass utilities */
+.glass-card {
+  background: rgba(17, 37, 56, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-card-strong {
+  background: rgba(11, 28, 43, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+}
+
+.glass-nav {
+  background: rgba(8, 21, 34, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 /* CSS Shimmer Button Sweeping effects */
@@ -59,7 +180,7 @@ html, body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.25),
     transparent
   );
   transform: skewX(-20deg);
@@ -71,69 +192,60 @@ html, body {
   transition: left 0.8s ease-in-out;
 }
 
-/* Scroll Animation Transitions */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(35px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+/* Shared original gold button styling */
+.btn-gold-solid,
+.btn-steel-solid {
+  background: #C89B3C;
+  color: #081522;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(200, 155, 60, 0.3);
+  box-shadow: 0 4px 15px rgba(200, 155, 60, 0.25);
+  transition: all var(--duration-normal) var(--ease-luxury);
+}
+.btn-gold-solid:hover,
+.btn-steel-solid:hover {
+  background: #E5C87A;
+  box-shadow: 0 6px 25px rgba(200, 155, 60, 0.4);
+  transform: translateY(-1px);
 }
 
-.reveal-on-scroll.revealed {
-  opacity: 1;
-  transform: translateY(0);
+.btn-secondary-outline {
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--border-default);
+  transition: all var(--duration-normal) var(--ease-luxury);
+}
+.btn-secondary-outline:hover {
+  background: #C89B3C;
+  border-color: var(--border-accent-subtle);
+  color: #081522;
+  transform: translateY(-1px);
 }
 
-/* Gold Glow Cards */
-.card-hover-glow {
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.btn-gold-solid:active,
+.btn-steel-solid:active,
+.btn-secondary-outline:active {
+  transform: translateY(0) scale(0.99);
 }
 
-.card-hover-glow:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 50px rgba(200, 155, 60, 0.15);
-  border-color: rgba(200, 155, 60, 0.4);
+.btn-gold-solid:disabled,
+.btn-steel-solid:disabled,
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
-/* Frosted Glass Utilities */
-.glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-card-hover {
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(200, 155, 60, 0.3);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 15px rgba(200, 155, 60, 0.05);
-  transform: translateY(-4px);
-}
-
-.glass-card-strong {
-  background: rgba(11, 11, 12, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.glass-nav {
-  background: rgba(11, 11, 12, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-blur-bg {
-  position: absolute;
-  pointer-events: none;
-  border-radius: 9999px;
-  filter: blur(120px);
-  mix-blend-mode: screen;
-  opacity: 0.15;
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .gold-gradient {
@@ -152,3 +264,21 @@ html, body {
   background-color: #C89B3C;
 }
 
+/* Accessibility: Reduced-Motion Behavior */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .btn-gold-solid:hover,
+  .btn-steel-solid:hover,
+  .btn-secondary-outline:hover,
+  .btn-gold-solid:active,
+  .btn-steel-solid:active,
+  .btn-secondary-outline:active {
+    transform: none !important;
+  }
+}

@@ -27,7 +27,7 @@ Products & Solutions:
 
 Notable Projects:
 
-* IIM Trichy
+* IIM Trichy Cricket Ground
 * NIT Trichy
 * Silverline Cancer & Multispeciality Hospital
 * GVN Hospitals
@@ -36,8 +36,6 @@ Notable Projects:
 * Hotel Sri Akshayam
 * Hotel Sai Karthik
 * Krishna Jewellery
-* MAPL India Pvt Ltd
-* Morais Developers Pvt Ltd
 
 Capabilities:
 

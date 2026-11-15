@@ -41,7 +41,7 @@ export default function App() {
   };
 
   return (
-    <div id="spica-lighting-app-container" className="flex flex-col min-h-screen bg-deep-black text-gray-200">
+    <div id="spica-lighting-app-container" className="flex flex-col min-h-screen bg-[var(--bg-primary)] text-[#F3F1EC]">
       
       {/* HEADER COMPONENT (Navigation, phone details, CTAs) */}
       <Header currentPage={currentPage} onPageChange={handlePageChange} />

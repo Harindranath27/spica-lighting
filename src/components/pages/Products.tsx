@@ -1,467 +1,264 @@
-import React, { useState, useEffect } from "react";
-import { Search, Info, SlidersHorizontal, MessageSquare, PhoneCall, HelpCircle, ArrowRight } from "lucide-react";
-import { PRODUCTS, CATEGORIES_NAV, CONTACT_DETAILS } from "../../data";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { ArrowRight, Info, MessageSquare, Search, SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { CATEGORIES_NAV, PRODUCTS } from "../../data";
 import { Product } from "../../types";
-import { CATEGORY_IMAGES } from "../../utils/assets";
 
 interface ProductsProps {
   initialFilter?: string;
 }
 
-export default function Products({ initialFilter = "all" }: ProductsProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>(initialFilter);
-  const [selectedBrand, setSelectedBrand] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+const BRAND_OPTIONS = [
+  { id: "wipro", label: "Wipro Lighting", logo: "/brands/wipro.png" },
+  { id: "northwest", label: "Wipro North-West", logo: "/brands/northwest.png" },
+  { id: "klite", label: "K-Lite", logo: "/brands/klite.png" },
+  { id: "nexus", label: "Nexus", logo: "/brands/nexus.png" }
+];
 
-  useEffect(() => {
-    setSelectedCategory(initialFilter);
-  }, [initialFilter]);
-
-  // Handle case-insensitive filter & search
-  const filteredProducts = PRODUCTS.filter((product) => {
-  const matchesBrand =
-    selectedBrand === "all" || product.brand === selectedBrand;
-
-  const matchesCategory =
-    selectedCategory === "all" || product.category === selectedCategory;
-
-  const matchesSearch =
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.feature.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.wattage.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.cct.toLowerCase().includes(searchQuery.toLowerCase());
-
-  return matchesBrand && matchesCategory && matchesSearch;
-});
-
-  const visibleCategories = CATEGORIES_NAV.filter((cat) => {
-  if (selectedBrand === "wipro") {
-    return ["residential", "commercial", "industrial", "outdoor"].includes(cat.id);
-  }
-
-  if (selectedBrand === "klite") {
-    return ["landscape", "facade", "street", "architectural"].includes(cat.id);
-  }
-
-  if (selectedBrand === "northwest") {
-    return ["switches"].includes(cat.id);
-  }
-
-  if (selectedBrand === "nexus") {
-    return ["architectural"].includes(cat.id);
-  }
-
-  return true;
-});
-
-const getCategoryLabel = (id: string) => {
-  const f = CATEGORIES_NAV.find((c) => c.id === id);
-  return f ? f.label : "Residential & Commercial Range";
+const CATEGORY_LABELS: Record<string, string> = {
+  residential: "Residential",
+  commercial: "Commercial",
+  industrial: "Industrial",
+  outdoor: "Outdoor",
+  facade: "Facade",
+  landscape: "Landscape",
+  architectural: "Architectural",
+  street: "Street lighting",
+  switches: "Switches"
 };
 
-  const getWhatsAppEnquiryLink = (pName: string) => {
-    const baseText = `Hi Spica Lighting (Trichy), I would like to enquire about the pricing and availability of: "${pName}" for my lighting project. Kindly share quotation.`;
-    return `https://wa.me/919092049595?text=${encodeURIComponent(baseText)}`;
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  residential: "Interior luminaires and lighting for residential spaces.",
+  commercial: "Linear and workspace lighting for commercial environments.",
+  industrial: "Lighting products for industrial spaces and facilities.",
+  outdoor: "Outdoor luminaires for external spaces and applications.",
+  facade: "Architectural luminaires for exterior surfaces.",
+  landscape: "Lighting products for landscape and public realm settings.",
+  architectural: "Architectural and decorative lighting selections.",
+  street: "Street lighting products for roads and pathways.",
+  switches: "Switches and electrical distribution accessories."
+};
+
+const brandName = (id: string) => BRAND_OPTIONS.find((brand) => brand.id === id)?.label ?? id;
+const categoriesForBrand = (brandId: string) => new Set(PRODUCTS.filter((product) => product.brand === brandId).map((product) => product.category));
+
+export default function Products({ initialFilter = "all" }: ProductsProps) {
+  const reduceMotion = useReducedMotion();
+  const [selectedCategory, setSelectedCategory] = useState(initialFilter);
+  const [selectedBrand, setSelectedBrand] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setSelectedCategory(initialFilter), [initialFilter]);
+
+  const visibleCategories = useMemo(() => {
+    const actual = [...new Set(PRODUCTS.map((product) => product.category))];
+    const allowed = selectedBrand === "all" ? null : categoriesForBrand(selectedBrand);
+    return actual.filter((id) => !allowed || allowed.has(id)).map((id) => ({
+      id,
+      label: CATEGORY_LABELS[id] ?? id,
+      desc: CATEGORY_DESCRIPTIONS[id]
+    }));
+  }, [selectedBrand]);
+
+  const filteredProducts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return PRODUCTS.filter((product) => {
+      const matchesBrand = selectedBrand === "all" || product.brand === selectedBrand;
+      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+      const matchesSearch = !query || [product.name, product.feature, product.wattage, product.cct, product.brand, product.category]
+        .some((value) => value.toLowerCase().includes(query));
+      return matchesBrand && matchesCategory && matchesSearch;
+    });
+  }, [selectedBrand, selectedCategory, searchQuery]);
+
+  const filteredByCategory = useMemo(() => {
+    return visibleCategories.map((category) => ({
+      ...category,
+      products: filteredProducts.filter((product) => product.category === category.id)
+    })).filter((category) => category.products.length > 0);
+  }, [filteredProducts, visibleCategories]);
+
+  const clearFilters = () => {
+    setSelectedCategory("all");
+    setSelectedBrand("all");
+    setSearchQuery("");
   };
 
-  const getEmailEnquiryLink = (pName: string) => {
-    const subject = `Enquiry: ${pName} - Spica Lighting`;
-    const body = `Dear Senthil Kumar K S,\n\nI am interested in ${pName}.\nCould you please share commercial pricing and lead times for my project?\n\nProject Location:\nRequired Quantities:\nMy Phone Number:\n\nThank you!`;
+  const getWhatsAppEnquiryLink = (productName: string) => {
+    const text = `Hi Spica Lighting (Trichy), I would like to enquire about the pricing and availability of: "${productName}" for my lighting project. Kindly share quotation.`;
+    return `https://wa.me/919092049595?text=${encodeURIComponent(text)}`;
+  };
+
+  const getEmailEnquiryLink = (productName: string) => {
+    const subject = `Enquiry: ${productName} - Spica Lighting`;
+    const body = `Dear Senthil Kumar K S,\n\nI am interested in ${productName}.\nCould you please share commercial pricing and lead times for my project?\n\nProject Location:\nRequired Quantities:\nMy Phone Number:\n\nThank you!`;
     return `mailto:spicalighting@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
+  useEffect(() => {
+    if (!selectedProduct) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedProduct(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    dialogRef.current?.focus();
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [selectedProduct]);
+
   return (
-    <div className="bg-deep-black min-h-screen text-gray-200 pt-32 pb-24 relative overflow-hidden">
-      {/* Background ambient gold aura */}
-      <div className="absolute top-[10%] left-[-10%] w-[400px] h-[400px] bg-gold-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[20%] right-[-10%] w-[400px] h-[400px] bg-gold-primary/5 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* HEADER BRAND BANNER */}
-        <div className="text-center md:text-left max-w-3xl mb-12">
-          <span className="font-display text-xs text-gold-primary font-bold uppercase tracking-[0.2em] mb-2.5 block">
-  ✦ Multi-Brand Product Portfolio
-</span>
-
-<h1 className="font-display font-medium text-4xl sm:text-5xl tracking-tight text-pure-white mb-4">
-  Lighting & Electrical Solutions Catalog
-</h1>
-
-<p className="font-sans text-sm text-gray-400 leading-relaxed">
-  Explore premium products from Wipro Lighting, North West, K-Lite and Nexus Lighting. From residential interiors and commercial spaces to facade, landscape, street lighting and electrical solutions, Spica Lighting delivers complete project-ready product portfolios.
-</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-
-  <div className="group glass-card rounded-xl p-8 text-center relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-gold-primary/40 hover:shadow-[0_0_35px_rgba(212,175,55,0.15)]">
-    <h3 className="text-gold-primary font-bold text-lg mb-2">
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold-primary/5 to-transparent translate-x-[-150%] group-hover:translate-x-[150%] transition-all duration-700 pointer-events-none" />
-      Wipro Lighting
-    </h3>
-    <p className="text-gray-400 text-xs">
-      Indoor, Commercial & Industrial Lighting
-    </p>
-  </div>
-
-  <div className="group glass-card rounded-xl p-8 text-center relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-gold-primary/40 hover:shadow-[0_0_35px_rgba(212,175,55,0.15)]">
-    <h3 className="text-gold-primary font-bold text-xl mb-3 transition-all duration-300 group-hover:scale-105">
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold-primary/5 to-transparent translate-x-[-150%] group-hover:translate-x-[150%] transition-all duration-700 pointer-events-none" />
-      North West
-    </h3>
-    <p className="text-gray-400 text-xs">
-      Switches & Electrical Accessories
-    </p>
-  </div>
-
-  <div className="group glass-card rounded-xl p-8 text-center relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-gold-primary/40 hover:shadow-[0_0_35px_rgba(212,175,55,0.15)]">
-    <h3 className="text-gold-primary font-bold text-lg mb-2">
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold-primary/5 to-transparent translate-x-[-150%] group-hover:translate-x-[150%] transition-all duration-700 pointer-events-none" />
-      K-Lite
-    </h3>
-    <p className="text-gray-400 text-xs">
-      Architectural & Outdoor Lighting
-    </p>
-  </div>
-
-  <div className="group glass-card rounded-xl p-8 text-center relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-gold-primary/40 hover:shadow-[0_0_35px_rgba(212,175,55,0.15)]">
-    <h3 className="text-gold-primary font-bold text-lg mb-2">
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold-primary/5 to-transparent translate-x-[-150%] group-hover:translate-x-[150%] transition-all duration-700 pointer-events-none" />
-      Nexus Lighting
-    </h3>
-    <p className="text-gray-400 text-xs">
-      Decorative & Luxury Lighting
-    </p>
-  </div>
-
-</div>
-<div className="flex flex-wrap gap-3 mb-8 justify-center">
-
-  <button
-    onClick={() => setSelectedBrand("all")}
-    className={`px-5 py-2 rounded-lg text-sm transition-all ${
-      selectedBrand === "all"
-        ? "gold-gradient text-black font-bold"
-        : "bg-white/5 text-gray-400 hover:text-gold-primary"
-    }`}
-  >
-    All Brands
-  </button>
-
-  <button
-    onClick={() => setSelectedBrand("wipro")}
-    className={`px-5 py-2 rounded-lg text-sm transition-all ${
-      selectedBrand === "wipro"
-        ? "gold-gradient text-black font-bold"
-        : "bg-white/5 text-gray-400 hover:text-gold-primary"
-    }`}
-  >
-    Wipro
-  </button>
-
-  <button
-    onClick={() => setSelectedBrand("northwest")}
-    className={`px-5 py-2 rounded-lg text-sm transition-all ${
-      selectedBrand === "northwest"
-        ? "gold-gradient text-black font-bold"
-        : "bg-white/5 text-gray-400 hover:text-gold-primary"
-    }`}
-  >
-    North West
-  </button>
-
-  <button
-    onClick={() => setSelectedBrand("klite")}
-    className={`px-5 py-2 rounded-lg text-sm transition-all ${
-      selectedBrand === "klite"
-        ? "gold-gradient text-black font-bold"
-        : "bg-white/5 text-gray-400 hover:text-gold-primary"
-    }`}
-  >
-    K-Lite
-  </button>
-
-  <button
-    onClick={() => setSelectedBrand("nexus")}
-    className={`px-5 py-2 rounded-lg text-sm transition-all ${
-      selectedBrand === "nexus"
-        ? "gold-gradient text-black font-bold"
-        : "bg-white/5 text-gray-400 hover:text-gold-primary"
-    }`}
-  >
-    Nexus
-  </button>
-
-</div>
-
-        {/* CONTROLS (SEARCH & TABS FILTERING) */}
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 glass-card p-4 rounded-2xl mb-10 shadow-xl border border-white/10">
-          
-          {/* SEARCH BAR */}
-          <div className="relative w-full lg:w-80">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="search products..."
-              className="w-full h-12 bg-white/[0.04] backdrop-blur-md border border-white/5 text-xs px-10 py-3.5 focus:outline-none focus:border-gold-primary rounded-xl text-gray-200 placeholder-gray-500 transition-all duration-200 shadow-inner"
-            />
+    <main className="min-h-screen bg-[#081522] pb-20 pt-28 text-[#F3F1EC] sm:pt-32">
+      <div className="spica-container">
+        <header className="mb-8 grid gap-5 border-b border-white/[0.08] pb-7 sm:mb-9 sm:grid-cols-[1fr_220px] sm:items-center lg:grid-cols-[1fr_280px] lg:gap-10 lg:pb-9">
+          <div className="max-w-3xl">
+            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#C89B3C]">Product catalogue</p>
+            <h1 className="font-display text-3xl font-medium tracking-tight text-[#F3F1EC] sm:text-4xl lg:text-5xl">Lighting &amp; Electrical Products</h1>
           </div>
+        </header>
 
-          {/* ACTIVE CATEGORY FILTER BUTTONS */}
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`shrink-0 px-4 py-2 text-xs font-display tracking-widest uppercase rounded-lg border transition-all cursor-pointer ${
-                selectedCategory === "all"
-                  ? "gold-gradient text-gray-950 font-extrabold border-gold-primary/40 shadow-lg"
-                  : "bg-white/[0.04] backdrop-blur border-white/10 text-gray-400 hover:text-gold-hover hover:border-gold-hover/40"
-              }`}
-            >
-              All Range
+        <section aria-label="Browse product categories" className="mb-6">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#9CA3AF]">Browse by category</h2>
+            <button type="button" onClick={() => setCategoryDrawerOpen((open) => !open)} aria-expanded={categoryDrawerOpen} aria-controls="category-navigation" className="inline-flex min-h-11 items-center gap-2 text-xs font-semibold text-[#C89B3C] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C]">
+              {categoryDrawerOpen ? "Hide categories" : `Browse categories${selectedCategory !== "all" ? ` · ${CATEGORY_LABELS[selectedCategory] ?? selectedCategory}` : ""}`}<ChevronDown className={`h-3.5 w-3.5 transition-transform ${categoryDrawerOpen ? "rotate-180" : ""}`} />
             </button>
-            {visibleCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`shrink-0 px-4 py-2 text-xs font-display tracking-widest uppercase rounded-lg border transition-all cursor-pointer ${
-                  selectedCategory === cat.id
-                    ? "gold-gradient text-gray-950 font-extrabold border-gold-primary/40 shadow-lg"
-                    : "bg-white/[0.04] backdrop-blur border-white/10 text-gray-400 hover:text-gold-hover hover:border-gold-hover/40"
-                }`}
-              >
-                {cat.label.replace("Indoor - ", "").replace("Outdoor & ", "")}
-              </button>
-            ))}
           </div>
-
-        </div>
-
-        {/* RESULTS METADATA & GRID */}
-        <div>
-          <div className="flex items-center justify-between mb-6 text-xs text-gray-500">
-            <span>
-              Showing <strong>{filteredProducts.length}</strong> items in{" "}
-              <strong className="text-gold-primary">
-                {selectedCategory === "all" ? "All Products" : getCategoryLabel(selectedCategory)}
-              </strong>
-            </span>
-            {searchQuery && (
-              <span>
-                Search filter active: <strong className="text-gray-300">"{searchQuery}"</strong>
-              </span>
-            )}
+          <div id="category-navigation" hidden={!categoryDrawerOpen} className="grid grid-cols-2 gap-px border border-white/[0.08] bg-[#0B1C2B] sm:grid-cols-3 lg:grid-cols-5">
+            <button type="button" aria-pressed={selectedCategory === "all"} onClick={() => { setSelectedCategory("all"); setCategoryDrawerOpen(false); }} className={`group relative min-h-24 overflow-hidden bg-[#0B1C2B] p-3 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C] sm:min-h-28 sm:p-4 ${selectedCategory === "all" ? "ring-1 ring-inset ring-[#C89B3C]" : ""}`}>
+              <span className="font-display text-sm font-semibold text-[#F3F1EC]">All categories</span><span className="mt-1 block font-mono text-[10px] text-[#9CA3AF]">{filteredProducts.length} products</span>
+            </button>
+            {visibleCategories.map((category) => {
+              const count = filteredProducts.filter((product) => product.category === category.id).length;
+              return (
+                <button key={category.id} type="button" aria-pressed={selectedCategory === category.id} onClick={() => { setSelectedCategory(category.id); setCategoryDrawerOpen(false); }} className={`group relative flex min-h-24 flex-col justify-end overflow-hidden bg-[#0B1C2B] p-3 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C] sm:min-h-28 sm:p-4 ${selectedCategory === category.id ? "ring-1 ring-inset ring-[#C89B3C]" : ""}`}>
+                  {PRODUCTS.find((product) => product.category === category.id)?.image && <img src={PRODUCTS.find((product) => product.category === category.id)?.image} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-contain p-3 opacity-30 transition-opacity duration-300 group-hover:opacity-50 motion-reduce:transition-none" />}
+                  <span className="absolute inset-0 bg-gradient-to-t from-[#081522] via-[#081522]/75 to-[#081522]/30" />
+                  <span className="relative block font-display text-sm font-semibold text-[#F3F1EC]">{category.label}</span><span className="relative mt-1 block font-mono text-[10px] text-[#9CA3AF]">{count} products</span>
+                </button>
+              );
+            })}
           </div>
+        </section>
 
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-24 bg-stone-950 border border-gray-900 rounded-sm">
-              <HelpCircle className="w-12 h-12 text-gold-primary/40 mx-auto mb-4" />
-              <h3 className="font-display font-semibold text-lg text-pure-white mb-2">
-                No matching products found
-              </h3>
-              <p className="font-sans text-xs text-gray-400 max-w-md mx-auto leading-relaxed">
-                We couldn't find any products in this range matching your search parameters. Try adjusting your vocabulary or contact Senthil Kumar K S directly.
-              </p>
-              <button
-                onClick={() => {
-                  setSelectedCategory("all");
-                  setSearchQuery("");
-                }}
-                className="mt-6 font-display font-bold text-xs tracking-widest text-gold-primary underline hover:text-gold-hover cursor-pointer"
-              >
-                Reset All Filters
+        <section aria-label="Search and filter products" className="mb-6">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+            <label className="relative block min-w-0 flex-1">
+              <span className="sr-only">Search products</span>
+              <Search aria-hidden="true" className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#C89B3C]" />
+              <input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search downlights, linear lights, switches…" className="h-14 w-full rounded-sm border border-white/[0.08] bg-[#0B1C2B] pl-14 pr-5 text-sm text-[#F3F1EC] placeholder:text-[#9CA3AF]/70 transition-colors hover:border-[#C89B3C]/40 focus:border-[#C89B3C] focus:outline-none focus:ring-2 focus:ring-[#C89B3C]/40 sm:h-16 sm:text-base" />
+            </label>
+            <div className="flex items-center justify-between gap-3 lg:justify-end">
+              <p className="text-xs text-[#9CA3AF]" aria-live="polite"><span className="font-semibold text-[#F3F1EC]">{filteredProducts.length}</span> products</p>
+              <button type="button" aria-expanded={filtersOpen} aria-controls="filter-panel" onClick={() => setFiltersOpen((open) => !open)} className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-white/[0.08] bg-[#0B1C2B] px-4 text-xs font-semibold text-[#F3F1EC] transition-colors hover:border-[#C89B3C]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C]">
+                <SlidersHorizontal className="h-4 w-4" /> Filters{selectedBrand !== "all" ? " · 1" : ""}<ChevronDown className={`h-3.5 w-3.5 transition-transform ${filtersOpen ? "rotate-180" : ""}`} />
               </button>
+              {(selectedCategory !== "all" || selectedBrand !== "all" || searchQuery) && <button type="button" onClick={clearFilters} className="min-h-11 px-2 text-xs font-semibold text-[#C89B3C] underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-[#C89B3C]">Clear all filters</button>}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProducts.map((p, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="group glass-card glass-card-hover rounded-2xl overflow-hidden flex flex-col justify-between cursor-pointer transition-all border border-white/10 shadow-lg"
-                    onClick={() => setSelectedProduct(p)}
-                  >
-                    
-                    {/* Specifications Header (No images, pure executive CSS style) */}
-                    <div className="relative bg-white border-b border-white/5">
-  <img
-    src={p.image}
-    alt={p.name}
-    className="w-full h-64 object-contain p-4"
-  />
+          </div>
 
-  <div className="absolute top-3 left-3">
-    <span className="font-mono text-[9px] text-gold-primary uppercase tracking-widest bg-black/80 border border-gold-primary/20 rounded-md px-2.5 py-1 font-semibold">
-      {p.brand.toUpperCase()} AUTHORISED
-    </span>
-  </div>
-</div>
-
-
-                    {/* Specifications */}
-                    <div className="p-6 flex-1 flex flex-col justify-between gap-6">
-                      <div className="space-y-3">
-                        <div className="flex items-start justify-between gap-4">
-                          <h3 className="font-display font-bold text-lg text-pure-white leading-snug group-hover:text-gold-primary transition-colors">
-                            {p.name}
-                          </h3>
-                        </div>
-                        
-                        {/* Specs Pill strips */}
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="px-2.5 py-1 bg-white/[0.04] border border-white/5 text-gray-300 font-mono text-[9px] rounded-lg uppercase tracking-wide">
-                            Watt: {p.wattage}
-                          </span>
-                          <span className="px-2.5 py-1 bg-white/[0.04] border border-white/5 text-gray-300 font-mono text-[9px] rounded-lg uppercase tracking-wide">
-                            CCT: {p.cct}
-                          </span>
-                        </div>
-
-                        <p className="font-sans text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                          {p.feature}
-                        </p>
-                      </div>
-
-                      <div className="border-t border-white/5 pt-4 flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-[9px] text-gray-600 uppercase font-mono tracking-wider">
-                            MRP Reference
-                          </span>
-                          <span className="text-xs text-gray-400 font-bold font-mono">
-                            Enquire pricing
-                          </span>
-                        </div>
-
-                        <button
-                          className="button-shimmer px-4 py-2 bg-white/[0.04] border border-white/10 text-gold-primary group-hover:gold-gradient group-hover:text-black hover:border-gold-primary rounded-lg text-xs font-display font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1.5"
-                        >
-                          <span>Enquire Now</span>
-                          <ArrowRight className="w-3 h-3 text-gold-primary group-hover:text-black transition-colors" />
-                        </button>
-                      </div>
-                    </div>
-
-                  </div>
-                );
-              })}
+          <div id="filter-panel" hidden={!filtersOpen} className="mt-4 grid gap-5 border border-white/[0.08] bg-[#0B1C2B] p-4 sm:grid-cols-[1fr_auto] sm:items-end sm:p-5">
+            <fieldset>
+              <legend className="mb-3 font-mono text-[9px] uppercase tracking-[0.16em] text-[#9CA3AF]">Filter by brand</legend>
+              <div className="flex flex-wrap gap-2">
+                {[{ id: "all", label: "All Brands" }, ...BRAND_OPTIONS].map((brand) => (
+                  <button key={brand.id} type="button" aria-pressed={selectedBrand === brand.id} onClick={() => { setSelectedBrand(brand.id); if (brand.id !== "all" && selectedCategory !== "all" && !categoriesForBrand(brand.id).has(selectedCategory)) setSelectedCategory("all"); }} className={`flex min-h-11 items-center gap-2 border px-3 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C] ${selectedBrand === brand.id ? "border-[#C89B3C] bg-[#C89B3C] text-[#081522] font-bold" : "border-white/[0.08] bg-[#0B1C2B] text-[#F3F1EC] hover:border-[#C89B3C]/50"}`}>
+                    {"logo" in brand && <img src={brand.logo} alt="" className="max-h-4 w-auto max-w-10 object-contain" />}{brand.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <button type="button" onClick={() => setFiltersOpen(false)} className="min-h-11 justify-self-start px-2 text-xs text-[#9CA3AF] underline underline-offset-4 hover:text-[#F3F1EC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C] sm:justify-self-end">Close filters</button>
+          </div>
+          {(selectedCategory !== "all" || selectedBrand !== "all" || searchQuery) && (
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px] text-[#9CA3AF]" aria-label="Active filters">
+              {selectedBrand !== "all" && <button type="button" onClick={() => setSelectedBrand("all")} aria-label={`Remove brand filter ${brandName(selectedBrand)}`} className="inline-flex min-h-10 items-center gap-1 rounded-full border border-white/[0.08] bg-[#0B1C2B] px-2.5 py-1 text-[#F3F1EC] hover:border-[#C89B3C]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C]">Brand: {brandName(selectedBrand)} <X className="h-3 w-3" /></button>}
+              {selectedCategory !== "all" && <button type="button" onClick={() => setSelectedCategory("all")} aria-label={`Remove category filter ${CATEGORY_LABELS[selectedCategory] ?? selectedCategory}`} className="inline-flex min-h-10 items-center gap-1 rounded-full border border-white/[0.08] bg-[#0B1C2B] px-2.5 py-1 text-[#F3F1EC] hover:border-[#C89B3C]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C]">Category: {CATEGORY_LABELS[selectedCategory] ?? selectedCategory} <X className="h-3 w-3" /></button>}
+              {searchQuery && <button type="button" onClick={() => setSearchQuery("")} aria-label="Clear product search" className="inline-flex min-h-10 items-center gap-1 rounded-full border border-white/[0.08] bg-[#0B1C2B] px-2.5 py-1 text-[#F3F1EC] hover:border-[#C89B3C]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C]">Search: “{searchQuery}” <X className="h-3 w-3" /></button>}
+                <button type="button" onClick={clearFilters} className="min-h-8 px-1 font-semibold text-[#C89B3C] underline underline-offset-2 focus-visible:ring-2 focus-visible:ring-[#C89B3C]">Clear all</button>
             </div>
           )}
-        </div>
+        </section>
 
+        {filteredProducts.length === 0 ? (
+          <div className="border-y border-white/[0.08] py-16 text-center sm:py-20">
+            <Search className="mx-auto h-8 w-8 text-[#9CA3AF]" aria-hidden="true" />
+            <h2 className="mt-4 font-display text-xl font-medium text-[#F3F1EC]">No matching products</h2>
+            <p className="mx-auto mt-2 max-w-md text-sm text-[#9CA3AF]">Try another search or clear the selected filters to browse the full catalogue.</p>
+            <button type="button" onClick={clearFilters} className="mt-5 min-h-11 rounded-sm border border-[#C89B3C]/40 px-5 text-xs font-semibold text-[#C89B3C] hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-[#C89B3C]">Clear filters</button>
+          </div>
+        ) : (
+          <section aria-label="Product results">
+            {(selectedCategory === "all" ? filteredByCategory : filteredByCategory.filter((category) => category.id === selectedCategory)).map((category) => (
+              <motion.section key={category.id} aria-labelledby={`category-${category.id}`} initial={{ opacity: reduceMotion ? 1 : 0, y: reduceMotion ? 0 : 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduceMotion ? 0 : 0.28, ease: "easeOut" }} className="mb-12 scroll-mt-28 sm:mb-16">
+                <div className="mb-5 flex items-end justify-between gap-4 border-b border-white/[0.08] pb-3">
+                  <div><p className="mb-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[#C89B3C]">Product range</p><h2 id={`category-${category.id}`} className="font-display text-xl font-medium text-[#F3F1EC] sm:text-2xl">{category.label}</h2><p className="mt-1 max-w-xl text-xs leading-5 text-[#9CA3AF]">{CATEGORY_DESCRIPTIONS[category.id]}</p></div>
+                  <span className="shrink-0 font-mono text-[10px] text-[#9CA3AF]">{category.products.length} items</span>
+                </div>
+                <div className="grid grid-cols-1 gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-9 lg:gap-y-12">
+              {category.products.map((product) => (
+                <article key={`${product.brand}-${product.name}`} className="group min-w-0 border-b border-white/[0.08] pb-5">
+                  <button type="button" onClick={() => setSelectedProduct(product)} aria-label={`View ${product.name} details`} className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#081522]">
+                    <div className="relative flex aspect-[1.25] items-center justify-center overflow-hidden bg-white p-6 sm:aspect-[1.18] lg:p-8 rounded-sm">
+                      <img src={product.image} alt={product.name} loading="lazy" className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.035] motion-reduce:transition-none" />
+                    </div>
+                    <div className="pt-4">
+                      <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#9CA3AF]">{brandName(product.brand)}</p>
+                      <h2 className="mt-1 font-display text-base font-semibold leading-snug text-[#F3F1EC] transition-colors group-hover:text-[#C89B3C]">{product.name}</h2>
+                      <div className="mt-3 flex min-h-5 flex-wrap gap-x-4 gap-y-1 text-xs text-[#9CA3AF]">
+                        {product.wattage && product.wattage !== "-" && <span>{product.wattage}</span>}
+                        {product.cct && product.cct !== "-" && <span className="text-[#9CA3AF]/80">{product.cct}</span>}
+                      </div>
+                      <p className="mt-2 line-clamp-2 min-h-10 text-xs leading-5 text-[#9CA3AF]">{product.feature}</p>
+                    </div>
+                  </button>
+                  <button type="button" onClick={() => setSelectedProduct(product)} className="mt-3 inline-flex min-h-11 items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#C89B3C] transition-colors hover:text-[#E5C87A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C89B3C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#081522]">
+                    Enquire about this product <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </article>
+              ))}
+                </div>
+              </motion.section>
+            ))}
+          </section>
+        )}
       </div>
 
-      {/* 3. PRODUCT SPECIFICATIONS DETAIL WINDOW MODAL */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-[10000] bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
-          <div className="glass-card-strong border border-white/20 rounded-2xl w-full max-w-2xl relative shadow-[0_24px_50px_rgba(0,0,0,0.95)] overflow-hidden scale-in duration-300">
-            
-            {/* Header / Accent Ribbon */}
-            <div className="h-1.5 bg-gradient-to-r from-gold-primary via-gold-hover to-gold-primary" />
-            
-            {/* Main scrollable body */}
-            <div className="p-6 sm:p-8 space-y-6">
-              
-              {/* Title Block */}
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <span className="font-mono text-[10px] text-gold-primary uppercase tracking-widest block font-bold mb-1">
-                    {selectedProduct.brand?.toUpperCase()} PRODUCT ENQUIRY
-                  </span>
-                  <h2 className="font-display font-bold text-2xl sm:text-3xl text-pure-white">
-                    {selectedProduct.name}
-                  </h2>
-                  <p className="font-sans text-xs text-gray-400 mt-1 italic">
-                   Authorised dealer support for {selectedProduct.brand} products
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  className="p-1.5 rounded bg-stone-900 border border-gray-800 text-gray-400 hover:text-gold-primary hover:border-gold-primary transition-all cursor-pointer"
-                  aria-label="Close details"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Specs Table */}
-              <div className="border border-gray-900 rounded bg-stone-950">
-                <div className="grid grid-cols-3 border-b border-gray-900 p-3 bg-stone-900/60 font-mono text-[10px] uppercase text-gray-500 font-bold tracking-wider">
-                  <div>Model Parameter</div>
-                  <div className="col-span-2">Specification Value</div>
-                </div>
-
-                <div className="grid grid-cols-3 border-b border-gray-900/60 p-3.5 text-xs">
-                  <div className="font-display font-semibold text-gray-400">Available Wattage</div>
-                  <div className="col-span-2 text-pure-white font-mono">{selectedProduct.wattage || "N/A"}</div>
-                </div>
-
-                <div className="grid grid-cols-3 border-b border-gray-900/60 p-3.5 text-xs">
-                  <div className="font-display font-semibold text-gray-400">Kelvin Options (CCT)</div>
-                  <div className="col-span-2 text-pure-white font-mono">{selectedProduct.cct || "N/A"}</div>
-                </div>
-
-                <div className="grid grid-cols-3 border-b border-gray-900/60 p-3.5 text-xs">
-                  <div className="font-display font-semibold text-gray-400">Key Features</div>
-                  <div className="col-span-2 text-gray-300">{selectedProduct.feature}</div>
-                </div>
-
-                <div className="grid grid-cols-3 border-b border-gray-900/60 p-3.5 text-xs">
-                  <div className="font-display font-semibold text-gray-400">MRP Range Reference</div>
-                  <div className="col-span-2 text-gold-primary font-mono select-none">
-                    {selectedProduct.mrpRange} <span className="text-gray-500 italic text-[10px]">(Request Spica Dealer Quote)</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 p-3.5 text-xs">
-                  <div className="font-display font-semibold text-gray-400">Warranty Support</div>
-                  <div className="col-span-2 text-gray-300">
-                    {selectedProduct.brand.toUpperCase()} Official Brand Warranty & Spica Support
-                    </div>
-                </div>
-              </div>
-
-              {/* Quick info note */}
-              <div className="flex gap-3 bg-gold-primary/5 border border-gold-primary/20 p-4 rounded-sm">
-                <Info className="w-5 h-5 text-gold-primary shrink-0 mt-0.5" />
-                <div className="text-xs text-gray-400 leading-relaxed">
-                  <strong className="text-gold-primary">Direct Trade Quotation</strong>: Since Spica processes commercial project volumes directly across Tamil Nadu, exact rates are adjusted for quantities, architectural drafts, and trade limits.
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-stretch gap-4 pt-3">
-                <a
-                  href={getWhatsAppEnquiryLink(selectedProduct.name)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="button-shimmer flex-1 flex items-center justify-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-display font-bold text-xs tracking-widest uppercase py-3.5 rounded-sm shadow-md transition-colors cursor-pointer"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.456L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.437.002 9.861-4.416 9.863-9.848.001-2.63-1.019-5.101-2.871-6.957C16.398 1.99 13.926.972 11.298.973c-5.438 0-9.863 4.417-9.865 9.848-.001 2.045.539 4.025 1.566 5.797L1.928 22.21l5.836-1.53c.045-.024.08-.04.123-.056z"/>
-                  </svg>
-                  <span>Enquire via WhatsApp</span>
-                </a>
-
-                <a
-                  href={getEmailEnquiryLink(selectedProduct.name)}
-                  className="flex-1 flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-850 text-gold-primary border border-gold-primary/25 hover:border-gold-primary/50 font-display font-bold text-xs tracking-widest uppercase py-3.5 rounded-sm transition-all cursor-pointer"
-                >
-                  <MessageSquare className="w-4 h-4 text-gold-primary" />
-                  <span>Request Email Quotation</span>
-                </a>
-              </div>
-
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/85 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProduct(null); }}>
+          <section ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="product-dialog-title" tabIndex={-1} className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl flex-col overflow-hidden border border-white/[0.12] bg-[#0B1C2B] shadow-2xl focus:outline-none sm:max-h-[calc(100dvh-3rem)] sm:flex-row rounded-lg">
+            <div className="relative flex h-48 shrink-0 items-center justify-center bg-white sm:h-auto sm:w-[42%]">
+              <img src={selectedProduct.image} alt={selectedProduct.name} className="h-full max-h-[38vh] w-full object-contain p-5 sm:max-h-full sm:p-8" />
+              <button type="button" onClick={() => setSelectedProduct(null)} aria-label="Close product details" className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-sm bg-black/80 text-white hover:text-[#C89B3C] focus-visible:ring-2 focus-visible:ring-[#C89B3C] sm:hidden"><X className="h-5 w-5" /></button>
             </div>
-          </div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 sm:p-7">
+              <div className="flex items-start justify-between gap-4">
+                <div><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#C89B3C]">{brandName(selectedProduct.brand)}</p><h2 id="product-dialog-title" className="mt-2 font-display text-2xl font-medium leading-tight text-[#F3F1EC]">{selectedProduct.name}</h2></div>
+                <button type="button" onClick={() => setSelectedProduct(null)} aria-label="Close product details" className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-white/[0.08] text-[#9CA3AF] hover:border-[#C89B3C]/50 hover:text-white focus-visible:ring-2 focus-visible:ring-[#C89B3C] sm:inline-flex"><X className="h-5 w-5" /></button>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-[#9CA3AF]">{selectedProduct.feature}</p>
+              <dl className="mt-6 divide-y divide-[#C89B3C]/15 border-y border-white/[0.08]">
+                <div className="grid grid-cols-[minmax(7rem,0.7fr)_1fr] gap-4 py-3 text-sm"><dt className="text-[#9CA3AF]">Category</dt><dd className="text-right text-[#F3F1EC]">{CATEGORIES_NAV.find((category) => category.id === selectedProduct.category)?.label ?? selectedProduct.category}</dd></div>
+                {selectedProduct.wattage && selectedProduct.wattage !== "-" && <div className="grid grid-cols-[minmax(7rem,0.7fr)_1fr] gap-4 py-3 text-sm"><dt className="text-[#9CA3AF]">Wattage</dt><dd className="text-right text-[#F3F1EC]">{selectedProduct.wattage}</dd></div>}
+                {selectedProduct.cct && selectedProduct.cct !== "-" && <div className="grid grid-cols-[minmax(7rem,0.7fr)_1fr] gap-4 py-3 text-sm"><dt className="text-[#9CA3AF]">Specification</dt><dd className="text-right text-[#F3F1EC]">{selectedProduct.cct}</dd></div>}
+                <div className="grid grid-cols-[minmax(7rem,0.7fr)_1fr] gap-4 py-3 text-sm"><dt className="text-[#9CA3AF]">Pricing</dt><dd className="text-right text-[#F3F1EC]">Enquire</dd></div>
+              </dl>
+              <div className="mt-5 flex items-start gap-3 text-xs leading-5 text-[#9CA3AF]"><Info className="mt-0.5 h-4 w-4 shrink-0 text-[#C89B3C]" /><p>Contact Spica Lighting for product availability and a project quotation.</p></div>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <a href={getWhatsAppEnquiryLink(selectedProduct.name)} target="_blank" rel="noreferrer" className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 bg-[#C89B3C] px-4 text-xs font-bold uppercase tracking-[0.08em] text-[#081522] hover:bg-[#E5C87A] focus-visible:ring-2 focus-visible:ring-white rounded-sm">Enquire via WhatsApp <ArrowRight className="h-4 w-4" /></a>
+                <a href={getEmailEnquiryLink(selectedProduct.name)} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 border border-white/[0.12] px-4 text-xs font-semibold uppercase tracking-[0.08em] text-[#F3F1EC] hover:border-[#C89B3C]/60 hover:text-[#C89B3C] focus-visible:ring-2 focus-visible:ring-[#C89B3C] rounded-sm"><MessageSquare className="h-4 w-4" /> Request email quote</a>
+              </div>
+            </div>
+          </section>
         </div>
       )}
-
-    </div>
+    </main>
   );
 }
-

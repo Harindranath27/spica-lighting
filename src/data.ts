@@ -1,4 +1,4 @@
-import { Product, Project } from "./types";
+import { CategoryNav, Product, Project } from "./types";
 
 export const BRAND_NAME = "Spica Lighting";
 export const TAGLINE = "Precision In Every Light";
@@ -42,7 +42,7 @@ export const BUSINESS_STATS = [
 ];
 
 export const TRUST_BADGES = [
-  { term: "IIM Trichy", label: "Indian Institute of Management", role: "Cricket Stadium Floodlighting" },
+  { term: "IIM Trichy Cricket Ground", label: "Indian Institute of Management", role: "Cricket Ground" },
   { term: "NIT Trichy", label: "National Institute of Technology", role: "Campus & Facility Lighting" },
   { term: "Silverline Hospital", label: "Multi-Storey Healthcare Facility", role: "Exterior & Interior Facade" },
   {
@@ -70,13 +70,13 @@ export const TRUST_BADGES = [
    
   }
 ];
-export const CATEGORIES_NAV = [
-  { id: "residential", label: "Residential" },
-  { id: "commercial", label: "Commercial" },
-  { id: "industrial", label: "Industrial" },
-  { id: "outdoor", label: "Outdoor" },
-  { id: "architectural", label: "Architectural" },
-  { id: "switches", label: "Switches" },
+export const CATEGORIES_NAV: CategoryNav[] = [
+  { id: "residential", label: "Residential", desc: "COB downlights, spot lights, slim panels & ambient solutions." },
+  { id: "commercial", label: "Commercial", desc: "Linear profiles, suspended grids, acoustic & workspace lighting." },
+  { id: "industrial", label: "Industrial", desc: "High bays, cleanroom luminaires & heavy-duty industrial fixtures." },
+  { id: "outdoor", label: "Outdoor", desc: "Floodlights, landscape illumination, solar & perimeter luminaires." },
+  { id: "architectural", label: "Architectural", desc: "Facade washes, designer pendants & precision optical poles." },
+  { id: "switches", label: "Switches", desc: "Luxury modular plates, designer switches & circuit distribution." },
 ];
 export const PRODUCTS: Product[] = [
 {
@@ -616,7 +616,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Onyx Marble",
   wattage: "LED 12W",
   cct: "Antique Brass",
-  image: "/products/nexus-2035-1.png"
+  image: "/products/nexus-2035-1.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -625,7 +626,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Onyx Marble",
   wattage: "1xE14",
   cct: "Antique Brass",
-  image: "/products/nexus-2039-h.png"
+  image: "/products/nexus-2039-h.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -634,7 +636,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Onyx Marble",
   wattage: "1xE14",
   cct: "Antique Brass",
-  image: "/products/nexus-2026-rd.png"
+  image: "/products/nexus-2026-rd.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -643,7 +646,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Onyx Marble",
   wattage: "1xE14",
   cct: "Antique Brass",
-  image: "/products/nexus-2026-1sq.png"
+  image: "/products/nexus-2026-1sq.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -652,7 +656,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Onyx Marble",
   wattage: "1xG9",
   cct: "Antique Brass",
-  image: "/products/nexus-2031-1.png"
+  image: "/products/nexus-2031-1.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -661,7 +666,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Onyx Marble",
   wattage: "1xE27",
   cct: "Antique Brass",
-  image: "/products/nexus-2041-h.png"
+  image: "/products/nexus-2041-h.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -670,7 +676,8 @@ export const PRODUCTS: Product[] = [
   feature: "Premium Metal Finish",
   wattage: "1xGU10",
   cct: "Antique Brass",
-  image: "/products/nexus-k11.png"
+  image: "/products/nexus-k11.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -679,7 +686,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal Finish",
   wattage: "1xGU10",
   cct: "Black / White",
-  image: "/products/nexus-k11m.png"
+  image: "/products/nexus-k11m.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -688,7 +696,8 @@ export const PRODUCTS: Product[] = [
   feature: "Contemporary Pendant",
   wattage: "1xGU10",
   cct: "Black",
-  image: "/products/nexus-k11cc.png"
+  image: "/products/nexus-k11cc.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -697,7 +706,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Acrylic",
   wattage: "LED 12W",
   cct: "Antique Brass + Black",
-  image: "/products/nexus-c1212.png"
+  image: "/products/nexus-c1212.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -706,7 +716,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Acrylic",
   wattage: "LED 15W",
   cct: "Antique Brass + Black",
-  image: "/products/nexus-c1315.png"
+  image: "/products/nexus-c1315.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -715,7 +726,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Acrylic",
   wattage: "LED 22W",
   cct: "Antique Brass + Black",
-  image: "/products/nexus-c1722.png"
+  image: "/products/nexus-c1722.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -724,7 +736,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Acrylic",
   wattage: "LED 12W",
   cct: "Brushed Brass",
-  image: "/products/nexus-c1216.png"
+  image: "/products/nexus-c1216.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -733,7 +746,8 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Acrylic",
   wattage: "LED 9W",
   cct: "Dull Gold",
-  image: "/products/nexus-51501pa.png"
+  image: "/products/nexus-51501pa.png",
+  mrpRange: "Enquire"
 },
 {
   brand: "nexus",
@@ -742,18 +756,19 @@ export const PRODUCTS: Product[] = [
   feature: "Metal + Acrylic",
   wattage: "LED 9W",
   cct: "Dull Gold",
-  image: "/products/nexus-51501pc.png"
+  image: "/products/nexus-51501pc.png",
+  mrpRange: "Enquire"
 }
 ];
 
 
 export const PROJECTS: Project[] = [
   {
-    name: "IIM Trichy",
+    name: "IIM Trichy Cricket Ground",
     type: "Institutional",
-    scope: "Institutional Campus",
+    scope: "Cricket Ground",
     productsUsed: "Project Reference",
-    imageIndex: 6,
+    image: "/iim-trichy-01.png",
     city: "Trichy"
   },
   {
@@ -761,7 +776,7 @@ export const PROJECTS: Project[] = [
     type: "Institutional",
     scope: "Institutional Campus",
     productsUsed: "Project Reference",
-    imageIndex: 1,
+    image: "/nit-trichy-01.png",
     city: "Trichy"
   },
   {
@@ -769,7 +784,7 @@ export const PROJECTS: Project[] = [
     type: "Healthcare",
     scope: "Healthcare Facility",
     productsUsed: "Project Reference",
-    imageIndex: 8,
+    image: "/silverline-hospital-01.png",
     city: "Manachanallur, Trichy"
   },
   {
@@ -777,7 +792,7 @@ export const PROJECTS: Project[] = [
     type: "Healthcare",
     scope: "Healthcare Facility",
     productsUsed: "Project Reference",
-    imageIndex: 4,
+    image: "/gvn-hospital-01.png",
     city: "Trichy"
   },
   {
@@ -785,7 +800,7 @@ export const PROJECTS: Project[] = [
     type: "Healthcare",
     scope: "Healthcare Facility",
     productsUsed: "Project Reference",
-    imageIndex: 4,
+    image: "/athma-hospital-01.webp",
     city: "Trichy"
   },
   {
@@ -793,7 +808,7 @@ export const PROJECTS: Project[] = [
     type: "Healthcare",
     scope: "Healthcare Facility",
     productsUsed: "Project Reference",
-    imageIndex: 5,
+    image: "/dr-kannans-gastromed-01.png",
     city: "Trichy"
   },
   {
@@ -801,7 +816,7 @@ export const PROJECTS: Project[] = [
     type: "Healthcare",
     scope: "Healthcare Facility",
     productsUsed: "Project Reference",
-    imageIndex: 8,
+    image: "/meenakshi-hospital-01.png",
     city: "Thanjavur"
   },
   {
@@ -809,7 +824,7 @@ export const PROJECTS: Project[] = [
     type: "Hospitality",
     scope: "Hospitality Project",
     productsUsed: "Project Reference",
-    imageIndex: 3,
+    image: "/hotel-sri-akshayam-01.png",
     city: "Kumbakonam"
   },
   {
@@ -817,7 +832,7 @@ export const PROJECTS: Project[] = [
     type: "Hospitality",
     scope: "Hospitality Project",
     productsUsed: "Project Reference",
-    imageIndex: 7,
+    image: "/hotel-sai-karthik-01.png",
     city: "Thiruverumbur, Trichy"
   },
   {
@@ -825,7 +840,7 @@ export const PROJECTS: Project[] = [
     type: "Hospitality",
     scope: "Hospitality Project",
     productsUsed: "Project Reference",
-    imageIndex: 3,
+    image: "/hotel-ariyas-01.png",
     city: "Mannargudi"
   },
   {
@@ -833,15 +848,15 @@ export const PROJECTS: Project[] = [
     type: "Hospitality",
     scope: "Hospitality Project",
     productsUsed: "Project Reference",
-    imageIndex: 3,
+    image: "/hotel-anand-01.png",
     city: "Trichy"
   },
   {
-    name: "Vijey Hotels",
+    name: "Vijay Hotels",
     type: "Hospitality",
     scope: "Hospitality Project",
     productsUsed: "Project Reference",
-    imageIndex: 3,
+    image: "/vijay-hotels.png",
     city: "Trichy"
   },
   {
@@ -849,98 +864,50 @@ export const PROJECTS: Project[] = [
     type: "Commercial",
     scope: "Commercial Project",
     productsUsed: "Project Reference",
-    imageIndex: 5,
+    image: "/krishna-jewellery-01.png",
     city: "Madurai"
   },
   {
-    name: "Morais Developers Pvt Ltd",
+    name: "R.G. Residency, Srirangam",
     type: "Commercial",
     scope: "Commercial Project",
     productsUsed: "Project Reference",
-    imageIndex: 5,
-    city: "Trichy"
-  },
-  {
-    name: "MAPL India Pvt Ltd",
-    type: "Commercial",
-    scope: "Commercial Project",
-    productsUsed: "Project Reference",
-    imageIndex: 5,
-    city: "Coimbatore"
-  },
-  {
-    name: "DS Fire Systems Pvt Ltd",
-    type: "Commercial",
-    scope: "Commercial Project",
-    productsUsed: "Project Reference",
-    imageIndex: 5,
-    city: "Trichy"
-  },
-  {
-    name: "360 Interior Design Studio",
-    type: "Commercial",
-    scope: "Commercial Project",
-    productsUsed: "Project Reference",
-    imageIndex: 5,
-    city: "Trichy"
-  },
-  {
-    name: "R.G Residency",
-    type: "Commercial",
-    scope: "Commercial Project",
-    productsUsed: "Project Reference",
-    imageIndex: 5,
+    image: "/rg-residency-srirangam-01.jpeg",
     city: "Srirangam"
-  },
-  {
-    name: "Tamil Mahal",
-    type: "Marriage Hall",
-    scope: "Marriage Hall",
-    productsUsed: "Project Reference",
-    imageIndex: 1,
-    city: "Manachanallur, Trichy"
   },
   {
     name: "Malathi Mahal",
     type: "Marriage Hall",
     scope: "Marriage Hall",
     productsUsed: "Project Reference",
-    imageIndex: 1,
+    image: "/malathi-mahal-01.png",
     city: "Trichy"
   },
   {
-    name: "SNS Mahal",
+    name: "SPS Mahal",
     type: "Marriage Hall",
     scope: "Marriage Hall",
     productsUsed: "Project Reference",
-    imageIndex: 1,
+    image: "/sps-mahal-01.png",
     city: "Trichy"
   }
 ];
 export const FREQUENT_QUESTIONS = [
 {
 q: "Are all your products genuine and branded?",
-a: "Yes. Spica Lighting supplies genuine products from authorized brands including Wipro Lighting, Wipro North-West, K-Lite, and Nexus. We focus on quality, reliability, and long-term performance."
+a: "We supply products from Wipro Lighting, Wipro North-West, K-Lite, and Nexus."
 },
 {
-q: "Do you provide lighting solutions for homes and commercial projects?",
-a: "Yes. We support residential, retail, office, hospitality, industrial, healthcare, and institutional projects. Our team can assist with product selection and lighting recommendations based on your requirements."
+q: "Do you supply outside Trichy?",
+a: "Yes. We support projects across Tamil Nadu."
 },
 {
-q: "Do you supply materials outside Trichy?",
-a: "Yes. We supply lighting and electrical products across Tamil Nadu and support projects in multiple cities and districts through our distribution network."
+q: "Can you help choose products for my project?",
+a: "Yes. Tell us about the space and application, and our team can help identify suitable products."
 },
 {
 q: "How can I request a quotation?",
-a: "You can submit an enquiry through our website, contact us by phone, or reach us on WhatsApp. Share your project details and our team will respond with a customized quotation."
-},
-{
-q: "Can you help me choose the right lighting for my space?",
-a: "Yes. We can recommend suitable lighting solutions based on room dimensions, ceiling height, application, ambiance requirements, and energy efficiency goals."
-},
-{
-q: "What types of projects has Spica Lighting completed?",
-a: "Our supplied projects include institutions, hospitals, hotels, commercial buildings, and industrial facilities, including IIM Trichy, NIT Trichy, Silverline Hospital, GVN Hospitals, Hotel Sri Akshayam, and other notable developments."
+a: "Send an enquiry through the form, phone or WhatsApp and our team will follow up."
 }
 ];
 
